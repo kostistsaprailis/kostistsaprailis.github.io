@@ -19,7 +19,7 @@ timezone:          Europe/Athens
 markdown:          kramdown
 highlighter:       rouge
 excerpt_separator: <!--excerpt-->
-permalink:         //:year/:month/:day/:title
+permalink:         //:year/:month/:day/:title/
 
 kramdown:
   auto_ids: true
