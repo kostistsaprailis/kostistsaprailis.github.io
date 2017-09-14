@@ -1,0 +1,15 @@
+# careers section data
+- name: Mist.io
+  link: http://mist.io/
+  date: January 2017 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i>
+  job: Full Stack Developer
+
+- name: Openbet
+  link: https://www.openbet.com/
+  date: January 2016 - January 2017
+  job: Support Engineer
+
+- name: Openbet
+  link: https://www.openbet.com/
+  date: November 2014 - January 2016
+  job: Junior Support Engineer
