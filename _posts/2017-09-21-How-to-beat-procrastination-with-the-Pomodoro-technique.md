@@ -10,7 +10,7 @@ comments: true
 
 <!--excerpt-->
 
-These are my thoughts and some tips that I have gathered by using the Pomodoro Technique, both at work and when studying. This came out of my own search for a way to get more focused when working on something because I would tend to procrastinate on anything imaginable.
+These are my thoughts and some tips that I have gathered using the Pomodoro Technique, both at work and when studying. This came out of my own search for a way to get more focused when working on something because I would tend to procrastinate on anything imaginable.
 
 <h2><strong>Contents</strong></h2>
 
@@ -35,7 +35,7 @@ The premise here is that instead of trying to focus for hours on end, you should
 
 ### Use whatever timer suits you
 
-It can either be an old school analog time, an app on your phone(which is not suggested because looking at your phone can break your focus from all the notifications), an online time, a cli program. Find what works best for you and stick to it.
+It can either be an old school analog time, an app on your phone (which is not suggested because looking at your phone can break your focus because of notifications), an online time, a cli program. Find what works best for you and stick to it.
 
 ### Start small
 
@@ -43,15 +43,15 @@ As mentioned above the typical way to use the Pomodoro technique is in intervals
 
 ### Time your breaks too
 
-You can easily get carried away when you don't time your breaks. That's why it's equally important to time then. As mentioned if at first you think that 3-5 minutes are not enough try to increase the time period to 7 or 10 but a) it should be fixed and b) it should be on the timer.
+You can easily get carried away when you don't time your breaks. That's why it's equally important to time them. As mentioned if at first you think that 3-5 minutes are not enough, try to increase the time period to 7 or 10 but a) it should be a fixed period and b) it should be on the timer.
 
 ### Keep a paper and a pen close by
 
-I have found this to be VERY important, almost as important as the timer. Why? Well the typical way I and anyone else procrastinates, is that you start working and then all of sudden a random thought pops up, that you need the answer right away, right? By noting it down on a piece of paper you a) acknowledge the thought, check if it makes sense to  b) are sure you won't forget about it so it's ok to not find the answer right away.
+I have found this to be VERY important, almost as important as the timer. Why? Well the typical way I and anyone else procrastinates, is that you start working and then all of sudden a random thought pops up, that you need the answer right away, right? By noting it down on a piece of paper you a) acknowledge the thought and b) are sure you won't forget about it, so it's ok to not find the answer right away.
 
-Another thing that the paper helps with is with the brain's knee-jerk reaction to open a random site. I have caught myself without even thinking about it, I open a new tab and start to type a procrastinating site like Twitter/Facebook/Whatever. When you get that urge just acknowledge it and set a mark on the paper. In my mind it doesn't matter that you won't go on that site, that was not the point but I think that this is just the brain's way of trying to get a small break. With time I think these knee-jerk reactions can be reduced to a minimum.
+Another thing that the paper helps with is with the brain's knee-jerk reaction to open a random site. I have caught myself without even thinking about it, I open a new tab and start to type a procrastinating site like Twitter/Facebook/Whatever. When you get that urge just acknowledge it and set a mark on the paper. In my mind it doesn't matter that you won't go on that site, that was probably not the point, but I think that this is just the brain's way of trying to get a small break. With time I think these knee-jerk reactions can be reduced to a minimum.
 
-### Close all distraction
+### Close all distractions
 
 We all know it our brains don't multitask well. You can't focus on a task and have a podcast playing on the background, or trying to find the solution to a problem and having Facebook/Twitter/Hacker News/Reddit/Whatever open.
 
