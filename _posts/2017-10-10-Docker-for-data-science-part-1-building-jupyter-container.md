@@ -284,6 +284,6 @@ Deleted: sha256:b55b2ae6bd8065f43e39f179773f82e0bb1df302162796bddd48cb606e6e6c1b
 
 ### Conclusion
 
-This was a small introduction into the docker basics: images and containers. The next post in the series will cover a multi-container system, where containers really shine. In the meantime the official docker [tutorial](https://docs.docker.com/get-started/) is a very good introduction to various concepts that were not covered here, I suggest getting a look at it.
+This was a small introduction into the docker basics: images and containers. The next post in the series will cover a multi-container system, where containers really shine.
 
 [docker-wikipedia]: https://en.wikipedia.org/wiki/Docker_(software)
