@@ -113,6 +113,9 @@ RUN useradd -ms /bin/bash jupyter
 # Change to this new user
 USER jupyter
 
+# Set the container working directory to the user home folder
+WORKDIR /home/jupyter
+
 # Start the jupyter notebook
 ENTRYPOINT ["jupyter", "notebook", "--ip=*"]
 ```
@@ -161,7 +164,7 @@ Successfully tagged jupyter:latest
 Once it is finished we can run again the `docker images` command to see the newly created image:
 
 ```
-kostis@kostismbp~/projects/docker-tests/jupyter$ docker images
+$ docker images
 REPOSITORY                   TAG                                       IMAGE ID            CREATED              SIZE
 jupyter                      latest                                    ff2f03f5aaea        About a minute ago   541MB
 ubuntu                       latest                                    2d696327ab2e        2 weeks ago          122MB
@@ -282,8 +285,125 @@ Deleted: sha256:3d5ec8b404c085bc7548a32d8077e5ec58e25e1059e78c88be5effab9414932b
 Deleted: sha256:b55b2ae6bd8065f43e39f179773f82e0bb1df302162796bddd48cb606e6e6c1b
 ```
 
+### Docker Storage (Update)
+
+User [gvkalra](https://www.reddit.com/user/gvkalra) on [Reddit](https://www.reddit.com/r/learnmachinelearning/comments/75rthw/introduction_to_docker_for_data_science_building/) noted the importance of mounted storage so I think this needs to be included here as well.
+So the basic question reagarding this issue is that as mentioned everything about a container is ephemeral, that's the whole point of creating a detached, clean environment in the first place. Then what happens if we have data that we need to persist after the container has been killed? Data could be either code or perhaps the output of calculations that we have performed.
+Docker solves this issue by the use of three persistent storage [techniques](https://docs.docker.com/engine/admin/volumes/). The techniques are [volumes](https://docs.docker.com/engine/admin/volumes/volumes/), [bind mounts](https://docs.docker.com/engine/admin/volumes/bind-mounts/) and [tmpfs](https://docs.docker.com/engine/admin/volumes/tmpfs/). Each of these have their specific use cases.
+
+#### Volumes
+The first, most common and preferred one is volumes. These are isolated spaces in the docker host which are stored under `/var/lib/docker/volumes`. The volume is mounted when a container is ran and mapped to a location on the container filesystem. Whatever is written in that location by the container will persist after the container has been killed. It's also useful to know that volumes can be shared across many different containers.
+Volumes can be created either explicitly and independent of any container with a standalone command, or they can be created if they passed as a docker run parameter.
+To create a new volume run the command `docker volume create jupyter_store` where `jupyter_store` should be whatever name the new volume should have. Running `docker volume ls` lists all the available volumes:
+```
+$ docker volume ls
+DRIVER              VOLUME NAME
+local               jupyter_store
+```
+To get additional information for our new volume we use `docker volume inspect jupyter_store`:
+```
+$ docker volume inspect jupyter_store
+[
+    {
+        "CreatedAt": "2017-10-21T15:36:23+03:00",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/var/lib/docker/volumes/jupyter_store/_data",
+        "Name": "jupyter_store",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+```
+So now we have a volume that we can use. Let's start a new container and connect to jupyter:
+
+```
+$ docker run -d -p 8888:8888 -v jupyter_store:/home/jupyter d189bcaf0613
+2bafcd956a5f04039b81a4c1dbb3b9b6375b858d68ab9930c5a9c505d79ddca5
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+2bafcd956a5f        d189bcaf0613        "jupyter notebook ..."   7 seconds ago       Up 5 seconds        0.0.0.0:8888->8888/tcp   elastic_curran
+$ docker logs elastic_curran
+[I 16:29:26.100 NotebookApp] Writing notebook server cookie secret to /home/jupyter/.local/share/jupyter/runtime/notebook_cookie_secret
+[W 16:29:26.118 NotebookApp] WARNING: The notebook server is listening on all IP addresses and not using encryption. This is not recommended.
+[I 16:29:26.124 NotebookApp] Serving notebooks from local directory: /home/jupyter
+[I 16:29:26.124 NotebookApp] 0 active kernels
+[I 16:29:26.124 NotebookApp] The Jupyter Notebook is running at:
+[I 16:29:26.125 NotebookApp] http://[all ip addresses on your system]:8888/?token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+[I 16:29:26.125 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 16:29:26.125 NotebookApp] No web browser found: could not locate runnable browser.
+[C 16:29:26.125 NotebookApp] 
+    
+    Copy/paste this URL into your browser when you connect for the first time,
+    to login with a token:
+        http://localhost:8888/?token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+Now let's create a new notebook called `test` and save it locally (on the container). Then I will stop the container and remove it altogether:
+
+```
+$ docker stop elastic_curran
+elastic_curran
+$ docker rm elastic_curran
+elastic_curran
+```
+Then I will create a new container and connect to jupyter:
+```
+$ docker run -d -p 8888:8888 -v jupyter_store:/home/jupyter d189bcaf0613
+99d953e9ea5960e88e7c756275a3f0746ebac55fce566e2f3bc7e0d6e4a671be
+$ docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES
+99d953e9ea59        d189bcaf0613        "jupyter notebook ..."   12 seconds ago      Up 10 seconds       0.0.0.0:8888->8888/tcp   suspicious_saha
+$ docker logs suspicious_saha 
+[W 16:32:04.903 NotebookApp] WARNING: The notebook server is listening on all IP addresses and not using encryption. This is not recommended.
+[I 16:32:04.910 NotebookApp] Serving notebooks from local directory: /home/jupyter
+[I 16:32:04.910 NotebookApp] 0 active kernels
+[I 16:32:04.910 NotebookApp] The Jupyter Notebook is running at:
+[I 16:32:04.910 NotebookApp] http://[all ip addresses on your system]:8888/?token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+[I 16:32:04.910 NotebookApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[W 16:32:04.910 NotebookApp] No web browser found: could not locate runnable browser.
+[C 16:32:04.910 NotebookApp] 
+    
+    Copy/paste this URL into your browser when you connect for the first time,
+    to login with a token:
+        http://localhost:8888/?token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+We can see that the previously created notebook is available. The fact that volumes are independent of the containers means that we can delete containers, create containers from new images altogether without having to worry about our data getting corrupted. Obviously this is also applicable with containers that contain databases. 
+
+Finally let's explore the folder that was assigned to this volume. Listing the folder files (we need sudo to access it because permissions to the docker volumes folder are restricted for the normal linux users):
+```
+$ sudo ls /var/lib/docker/volumes/jupyter_store/_data
+test.ipynb
+```
+Our jupyter notebook is saved there as expected. To get more details about the intricacies of volumes please refer to the full guide on the docker site [here](https://docs.docker.com/engine/admin/volumes/volumes/). 
+Before we move on I should note the command to remove volumes is:
+```
+$ docker volume rm jupyter_store
+```
+
+#### Bind Mount
+The second way to achieve data persistence on a container is using bind mounts. This is a pretty similar technique which instead of creating an isolated storage space for the containers, instead uses a folder from the docker host machine that is specified when we start a container. For example to use the current working directory we should run:
+```
+$ docker run -d -p 8888:8888 -v "$(PWD)":/home/jupyter d189bcaf0613
+```
+or if we wanted to mount the `/tmp/source/input` folder (the folder should exist on the docker host machine) we would use: 
+```
+$ docker run -d -p 8888:8888 -v /tmp/source/input/:/home/jupyter d189bcaf0613
+```
+Obviously since these folders are not restricted to be used by docker alone, run the risk of being overwritten by other processes running on the docker host and hence this method of using persistence is not preferred except in cases where we have sensitive data on the docker host that we don't want to include on the docker image, but we do need on the container, like configuration files or password data. To find out more about bind mounts please refer again to the docker site [page](https://docs.docker.com/engine/admin/volumes/bind-mounts).
+
+#### tmpfs
+
+The last way we can use persistence is with tmpfs. This is really a pseudo-persistence technique since we are using the docker host machine memory to create a mount point. This is useful in cases where we want to store data on the container just for lifecycle of the container but we also don't want to keep these on the container memory. 
+To use this mount we run a container with the `--tmpfs` param instead of `-v` and provide the container mount point:
+```
+$ docker run -d -p 8888:8888 -tmpfs /home/jupyter d189bcaf0613
+```
+This is really a niche use case, if you want find out more about it check the [docs](https://docs.docker.com/engine/admin/volumes/tmpfs).
+
 ### Conclusion
 
 This was a small introduction into the docker basics: images and containers. The next post in the series will cover a multi-container system, where containers really shine.
+
+If you prefer the more classical approach to learning more about Docker via a book I would suggest <a target="_blank" href="https://www.amazon.com/gp/product/0988820234/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=0988820234&linkCode=as2&tag=tsaprailis-20&linkId=f0233eded9ac1c43a9c017131b5741b3">The Docker Book</a><img src="//ir-na.amazon-adsystem.com/e/ir?t=tsaprailis-20&l=am2&o=1&a=0988820234" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /> (affiliate link).
 
 [docker-wikipedia]: https://en.wikipedia.org/wiki/Docker_(software)

@@ -474,7 +474,7 @@ Plan: 2 to add, 0 to change, 0 to destroy.
 
 Terraform will output what resources will be created so that you can double check that everything is as required. Then we actually run the `terraform apply` and the resource creation begins:
 ```
-kostis@kostismbp terraform $ terraform apply
+$ terraform apply
 aws_security_group.jupyter_notebook_sg: Creating...
   description:                           "" => "Managed by Terraform"
   egress.#:                              "" => "1"
@@ -505,7 +505,7 @@ node_dns_name = ec2-34-240-28-230.eu-west-1.compute.amazonaws.com
 After a while the resources have been created, we can see that Terraform has provided the public DNS name as mentioned, and we can ssh to the machine:
 
 ```
-kostis@kostismbp terraform $ ssh -i ~/.aws/mac-ssh.pem ubuntu@ec2-34-240-28-230.eu-west-1.compute.amazonaws.com
+$ ssh -i ~/.aws/mac-ssh.pem ubuntu@ec2-34-240-28-230.eu-west-1.compute.amazonaws.com
 Welcome to Ubuntu 16.04.2 LTS (GNU/Linux 4.4.0-1022-aws x86_64)
 
  * Documentation:  https://help.ubuntu.com
@@ -549,7 +549,7 @@ Going to this URL confirms that everything is up and running!
 Once we are done with our work we can just destroy the VM. Terraform will ask to confirm the destruction of the VM and then proceed to destroy it.
 
 ```
-kostis@kostismbp terraform $ terraform destroy
+$ terraform destroy
 aws_security_group.jupyter_notebook_sg: Refreshing state... (ID: sg-a19bc7d9)
 aws_instance.Node: Refreshing state... (ID: i-05a88fcd8cafae195)
 
@@ -585,5 +585,7 @@ Destroy complete! Resources: 2 destroyed.
 ### Conclusion
 
 Hope you liked this tutorial. I tried to summarize everything I learned along the way. Terraform is a very helpful tool that is being adopted by many tech companies. After this introduction I would encourage you to read more about it. Creating a single machine is just a very simple case but if you get the hang of you can create multi node architecture with big data systems like Hadoop, Spark etc.
+
+If you want to learn more about Terraform I would suggest <a target="_blank" href="https://www.amazon.com/gp/product/1491977086/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1491977086&linkCode=as2&tag=tsaprailis-20&linkId=a9de938b1dddc750a1a11307c7e84478">Terraform: Up and Running: Writing Infrastructure as Code</a><img src="//ir-na.amazon-adsystem.com/e/ir?t=tsaprailis-20&l=am2&o=1&a=1491977086" width="1" height="1" border="0" alt="" style="border:none !important; margin:0px !important;" /> (affiliate link) which is an excellent practical introduction.
 
 If you have any remarks, bugs, suggestions etc feel free to contact me or leave a comment.
