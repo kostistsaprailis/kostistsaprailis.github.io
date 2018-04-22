@@ -1,7 +1,12 @@
 # careers section data
+- name: Vaix
+  link: https://vaix.ai/
+  date: November 2017 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i>
+  job: Machine Learning Engineer
+
 - name: Mist.io
   link: http://mist.io/
-  date: January 2017 - <i class="fa fa-clock-o" aria-hidden="true" title="Until Now"></i>
+  date: January 2017 - November 2017
   job: Full Stack Developer
 
 - name: Openbet
