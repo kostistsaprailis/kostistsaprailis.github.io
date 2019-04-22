@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: tsaprailis.com
+Token: e7f040d6180c1a80a2ae58fad8bd91e5777ff8d4493ca6d9aa6c1eeba0f2ba57
