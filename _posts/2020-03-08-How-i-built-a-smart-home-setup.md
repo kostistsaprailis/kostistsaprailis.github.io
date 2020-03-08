@@ -300,6 +300,6 @@ Now if you go to you local raspberry pi IP and port 8081 (in my case http://192.
 
 And if you have setup the WireGuard app on your mobile, and activated you profile you should be able to access this feed whenever you have internet access.
 
-## Final thought and future work
+## Final Thoughts and Future Work
 
 I'm planning to make this automated setup a little smarter by adding some machine learning based control, so stay tuned for this.
