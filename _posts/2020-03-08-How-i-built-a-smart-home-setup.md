@@ -12,6 +12,9 @@ comments: true
 
 Installation guidelines for everything I have setup in my smart home setup. This is a log for recreation for me and anyone else that might find it useful.
 
+My home setup consists of Xiaomi motion sensors that are controlling some Phillips Hue lightbulbs, and a USB camera for monitoring my house and my cat :) when I'm away.
+I'm also using a conbee USB stick so that I don't have to buy the Phillips and the Xiaomi specific bridges, and also the open source home assistant app to control the lights manually.
+
 <h2><strong>Contents</strong></h2>
 
 * TOC
@@ -296,3 +299,7 @@ Then click apply and everything should be setup and ready to use.
 Now if you go to you local raspberry pi IP and port 8081 (in my case http://192.168.2.13:8081), after you login with the Surveillance username and password credentials you should see the streaming video from your camera.
 
 And if you have setup the WireGuard app on your mobile, and activated you profile you should be able to access this feed whenever you have internet access.
+
+## Final thought and future work
+
+I'm planning to make this automated setup a little smarter by adding some machine learning based control, so stay tuned for this.
