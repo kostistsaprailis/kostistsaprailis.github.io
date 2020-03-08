@@ -248,7 +248,7 @@ Enter a Name for the Client: test
 And it's ready! To connect from your device follow the instruction to install the WireGuard client from their [webpage](https://www.wireguard.com/install/).
 If you install it on a mobile device use the `pivpn -qr` command to generate a QR code that you can scan from inside the mobile app to quickly setup the profile and connect.
 
-## Install MotionEye
+## Installing MotionEye
 
 For this step you need to have attached the USB camera to the raspberry pi.
 
