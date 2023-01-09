@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:ital,wght@0,400;0,700;1,400&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="/theme/stylesheet/style.min.css">
+
+
+    <link id="pygments-light-theme" rel="stylesheet" type="text/css"
+          href="/theme/pygments/github.min.css">
+
+
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/fontawesome.css">
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/brands.css">
+  <link rel="stylesheet" type="text/css" href="/theme/font-awesome/css/solid.css">
+
+
+
+
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
+
+  
+
+
+ 
+
+<meta name="author" content="Kostis Tsaprailis" />
+<meta name="description" content="My walkthough of installing an assortment of smart thing/devices" />
+<meta name="keywords" content="SmartHome, HomeAssistant, Conbee, MotionEye">
+
+
+  <meta property="og:site_name" content="Kostis Tsaprailis"/>
+  <meta property="og:title" content="How I built a smart(ish) home with HomeAssistant, a Conbee USB and MotionEye"/>
+  <meta property="og:description" content="My walkthough of installing an assortment of smart thing/devices"/>
+  <meta property="og:locale" content="en_US"/>
+  <meta property="og:url" content="/2020/03/08/how-i-built-a-smartish-home-with-homeassistant-a-conbee-usb-and-motioneye/"/>
+  <meta property="og:type" content="article"/>
+  <meta property="article:published_time" content="2020-03-08 00:00:00+03:00"/>
+  <meta property="article:modified_time" content=""/>
+  <meta property="article:author" content="/author/kostis-tsaprailis.html">
+  <meta property="article:section" content="tutorial"/>
+  <meta property="article:tag" content="SmartHome"/>
+  <meta property="article:tag" content="HomeAssistant"/>
+  <meta property="article:tag" content="Conbee"/>
+  <meta property="article:tag" content="MotionEye"/>
+  <meta property="og:image" content="/images/profile.png">
+
+  <title>Kostis Tsaprailis &ndash; How I built a smart(ish) home with HomeAssistant, a Conbee USB and MotionEye</title>
+
+</head>
+<body class="light-theme">
+  <aside>
+    <div>
+      <a href="/">
+        <img src="/images/profile.png" alt="" title="">
+      </a>
+
+      <h1>
+        <a href="/"></a>
+      </h1>
+
+<p>Full Stack Breaker</p>
+
+
+      <ul class="social">
+          <li>
+            <a  class="sc-twitter" href="https://twitter.com/ktsaprailis" target="_blank">
+              <i class="fab fa-twitter"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-github" href="https://github.com/kostistsaprailis/" target="_blank">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+          <li>
+            <a  class="sc-linkedin" href="https://www.linkedin.com/in/konstantinostsaprailis/" target="_blank">
+              <i class="fab fa-linkedin"></i>
+            </a>
+          </li>
+      </ul>
+    </div>
+
+  </aside>
+  <main>
+
+
+<article class="single">
+  <header>
+      
+    <h1 id="how-i-built-a-smartish-home-with-homeassistant-a-conbee-usb-and-motioneye">How I built a smart(ish) home with HomeAssistant, a Conbee USB and MotionEye</h1>
+    <p>
+      Posted on Sun 08 March 2020 in <a href="/category/tutorial.html">tutorial</a>
+
+    </p>
+  </header>
+
+
+  <div>
+    <p>Installation guidelines for everything I have setup in my smart home setup. This is a log for recreation for me and anyone else that might find it useful.</p>
+<p>My home setup consists of Xiaomi motion sensors that are controlling some Phillips Hue lightbulbs, and a USB camera for monitoring my house and my cat :) when I'm away.
+I'm also using a conbee USB stick so that I don't have to buy the Phillips and the Xiaomi specific bridges, and also the open source home assistant app to control the lights manually.</p>
+<h2>Required Components</h2>
+<ul>
+<li>A RaspberryPi 3/3+/4</li>
+<li><a href="https://www.amazon.com/dresden-elektronik-ConBee-Universal-Gateway/dp/B07PZ7ZHG5">A Conbee USB stick</a></li>
+<li><a href="https://www.amazon.com/Logitech-Desktop-Widescreen-Calling-Recording/dp/B004FHO5Y6">A USB Camera</a></li>
+</ul>
+<h2>Installing Raspbian</h2>
+<p>So the first thing we need to do is install the latest <a href="https://www.raspberrypi.org/downloads/raspbian/">Raspbian</a> image on an SD card.
+You can choose any of the available images but because I'll be accessing the Pi via the terminal with SSH I chose <code>Raspbian Buster Lite</code> which is a smaller image.
+For writing the image to the SD card I used the <a href="https://www.balena.io/etcher/">Balena Etcher</a> tool.</p>
+<p>After downloading and writing the image we need to add the following two files in the root folder of the SD card:</p>
+<ul>
+<li>a file called <code>wpa_supplicant.conf</code></li>
+<li>and a file <code>ssh</code></li>
+</ul>
+<h3>For wpa_supplicant.conf</h3>
+<p>The first file is used to automatically connect to a WIFI network. There are extensive instructions on what will go on this file in the official raspberry <a href="https://www.raspberrypi.org/documentation/configuration/wireless/wireless-cli.md">documentation</a>.
+In short what needs to go in there is:</p>
+<div class="highlight"><pre><span></span><code><span class="n">ctrl_interface</span><span class="o">=</span><span class="n">DIR</span><span class="o">=/</span><span class="k">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">wpa_supplicant</span><span class="w"> </span><span class="n">GROUP</span><span class="o">=</span><span class="n">netdev</span><span class="w"></span>
+<span class="n">update_config</span><span class="o">=</span><span class="mi">1</span><span class="w"></span>
+<span class="n">country</span><span class="o">=&lt;</span><span class="n">Insert</span><span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="n">code</span><span class="w"> </span><span class="n">here</span><span class="o">&gt;</span><span class="w"></span>
+<span class="n">network</span><span class="o">=</span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">ssid</span><span class="o">=</span><span class="s2">&quot;testing&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="n">psk</span><span class="o">=</span><span class="s2">&quot;testingPassword&quot;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</code></pre></div>
+
+<p>The first 3 lines are configuration related and we only need to replace the country code, with the relevant code from <a href="https://en.wikipedia.org/wiki/ISO_3166-1">Wikipedia</a>. In my case it's <code>GR</code> for Greece.
+The second part, inside the network curly braces is for the wireless network name and password. Replace the ssid with the network name and the psk with password and save the file.</p>
+<h3>For ssh</h3>
+<p>The second file we need to create is an empty file named <code>ssh</code> (no file extension). This need to go again to the root path of the SD Card. We need this to enable ssh access on the Pi as per the blogpost on the raspberry <a href="https://www.raspberrypi.org/blog/a-security-update-for-raspbian-pixel/">site</a>.</p>
+<h2>Accessing the Pi</h2>
+<p>Connect the RaspberryPi to a powersupply, wait a few seconds, and it should be ready to connect. Now the tricky part is, because the Pi is assigned an IP by the router we need to figure out which IP that is.</p>
+<p>We can either use the router web interface to get the assigned IP or use a tool like <a href="https://www.fing.com/products/fing-app">Fing</a> or similar, which when installed on a device on a network, will scan and display the information for all devices in the same network.</p>
+<p>After we find this IP the we can simply ssh to it via a terminal (the default password is <code>raspberry</code>):</p>
+<div class="highlight"><pre><span></span><code><span class="n">$</span><span class="w"> </span><span class="n">ssh</span><span class="w"> </span><span class="n">pi</span><span class="mf">@192.168.2.13</span><span class="w"></span>
+</code></pre></div>
+
+<p>Now we are ready to start setting things up. First we need to do some securing. Let's start by changing the default password for the user <code>pi</code>:</p>
+<div class="highlight"><pre><span></span><code>$ passwd
+Changing password <span class="k">for</span> pi.
+Current password:
+New password:
+Retype new password:
+passwd: password updated successfully
+</code></pre></div>
+
+<p>Type the old password, and the new one. Then let's update the system and install <code>vim</code> the text editor:</p>
+<div class="highlight"><pre><span></span><code>$ sudo apt-get update
+$ sudo apt-get upgrade -y
+$ sudo apt-get install vim -y
+</code></pre></div>
+
+<p>Now let copy our ssh key from a local machine to the Pi. I use the <code>ssh-copy-id</code> command to do so but you can find out how to copy an ssh key by googling for your system.</p>
+<div class="highlight"><pre><span></span><code><span class="n">$</span><span class="w"> </span><span class="n">ssh</span><span class="o">-</span><span class="k">copy</span><span class="o">-</span><span class="kt">id</span><span class="w"> </span><span class="n">pi</span><span class="mf">@192.168.2.13</span><span class="w"></span>
+</code></pre></div>
+
+<p>So now that we have our key to the Pi, as an extra measure of security let's deactivate ssh as the root user and the option to login with a password:</p>
+<div class="highlight"><pre><span></span><code>sudo vim /etc/ssh/sshd_config
+</code></pre></div>
+
+<p>by adding the following to the <code>sshd_config</code> file:</p>
+<div class="highlight"><pre><span></span><code>PermitRootLogin no
+PasswordAuthentication no
+</code></pre></div>
+
+<h2>Installing HomeAssistant</h2>
+<p>Now let's move on the installing the HomeAssistant. By default HomeAssistant provides a docker image called <code>hass.io</code> but we'll use the alternative <code>manual installation</code> method provided by <a href="https://www.home-assistant.io/docs/installation/raspberry-pi/">homeassistant</a></p>
+<p>Start by installing the required dependencies:</p>
+<div class="highlight"><pre><span></span><code>$ sudo apt-get install python3 python3-dev python3-venv python3-pip libffi-dev libssl-dev
+</code></pre></div>
+
+<p>Then we create a new user and following the rest of the steps:</p>
+<div class="highlight"><pre><span></span><code>$ sudo useradd -rm homeassistant -G dialout,gpio,i2c
+$ <span class="nb">cd</span> /srv
+$ sudo mkdir homeassistant
+$ sudo chown homeassistant:homeassistant homeassistant
+$ sudo -u homeassistant -H -s
+$ <span class="nb">cd</span> /srv/homeassistant
+$ python3 -m venv .
+$ <span class="nb">source</span> bin/activate
+$ python3 -m pip install wheel
+$ pip3 install homeassistant
+</code></pre></div>
+
+<p>Once everything has been setup we run HomeAssistant with the <code>hass</code> command.</p>
+<div class="highlight"><pre><span></span><code>$ hass
+</code></pre></div>
+
+<p>After about 5-10 minutes (initial setup) going to the following url (this is the raspberry pi IP for mine, you need to replace with yours) <code>http://192.168.2.13:8123</code> should load the following screen:</p>
+<p><img alt="Hass" src="/images/hass.png"></p>
+<p>Now we want HomeAssistant to start at every RaspberryPi reboot so we will follow the instructions <a href="https://www.home-assistant.io/docs/autostart/systemd/">here</a>:</p>
+<p>Let's create a new service file:</p>
+<div class="highlight"><pre><span></span><code>$ sudo vim /etc/systemd/system/home-assistant@homeassistant.service
+</code></pre></div>
+
+<p>and add the following in it:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span><span class="w"></span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Home Assistant</span><span class="w"></span>
+<span class="na">After</span><span class="o">=</span><span class="s">network-online.target</span><span class="w"></span>
+
+<span class="k">[Service]</span><span class="w"></span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span><span class="w"></span>
+<span class="na">User</span><span class="o">=</span><span class="s">homeassistant</span><span class="w"></span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/srv/homeassistant/bin/hass -c &quot;/home/homeassistant/.homeassistant&quot;</span><span class="w"></span>
+
+<span class="k">[Install]</span><span class="w"></span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span><span class="w"></span>
+</code></pre></div>
+
+<p>then enable the service by running the following:</p>
+<div class="highlight"><pre><span></span><code>$ sudo systemctl <span class="nb">enable</span> home-assistant@homeassistant
+</code></pre></div>
+
+<p>Finally this should set everything up, and rebooting the Pi we should be able to access homeassistant in the web interface without having to manual starting it. For details on how to use homeassistant read the guide on their <a href="https://www.home-assistant.io/getting-started/onboarding/">site</a>.</p>
+<h2>Installing Conbee</h2>
+<p>The next piece of software we need to install is Conbee. It's the application that is using the USB stick that connects all the Zigbee compatible devices. We will follow the installation instructions from the official <a href="https://phoscon.de/en/conbee/install#raspbian">page</a>.</p>
+<p>Run the instruction to install deconz:</p>
+<div class="highlight"><pre><span></span><code>$ sudo gpasswd -a <span class="nv">$USER</span> dialout
+$ wget -O - http://phoscon.de/apt/deconz.pub.key <span class="p">|</span> <span class="se">\</span>
+           sudo apt-key add -
+$ sudo sh -c <span class="s2">&quot;echo &#39;deb http://phoscon.de/apt/deconz \</span>
+<span class="s2">            </span><span class="k">$(</span>lsb_release -cs<span class="k">)</span><span class="s2"> main&#39; &gt; \</span>
+<span class="s2">            /etc/apt/sources.list.d/deconz.list&quot;</span>
+$ sudo apt update
+$ sudo apt install deconz
+</code></pre></div>
+
+<p>Then start (and enable as to be starting at each reboot) the created <code>deconz</code> and <code>deconz-gui</code> services:</p>
+<div class="highlight"><pre><span></span><code>$ sudo systemctl <span class="nb">enable</span> deconz
+$ sudo systemctl <span class="nb">enable</span> deconz-gui
+$ sudo systemctl start deconz
+$ sudo systemctl start deconz-gui
+</code></pre></div>
+
+<p>The go to the web app and it will autodetect the device to set it up. From here you can connect your devices.</p>
+<p>http://phoscon.de/app</p>
+<h2>Install DuckDNS</h2>
+<p>We want to be able to access the home assistant interface even when we're outside the home. Because the home connection usually doesn't have a static IP to connect to we need some other way to be able to access the home network whenever we want. This is where DuckDNS comes in. They give you 5 free subdomains under <code>&lt;SUBDOMAIN&gt;.duckdns.org</code>. The only problem is having a way to update the mapping of the home connection IP to this domain name. </p>
+<p>DuckDNS provides instructions on how to create a cron job (basically a script that will run periodically) and contact the DuckDNS service to let them know if the IP associated with this subdomain needs updating.</p>
+<p>First go to their <a href="https://www.duckdns.org/">website</a> and create a new account. After this has been setup choose you subdomain and click the <code>add domain</code> button.</p>
+<p><img alt="DuckDNS" src="/images/duckdns-example.png"></p>
+<p>Then go to the <code>install</code> link on the top of the page, then under <code>Operating Systems</code> choose <code>linux cron</code> and under <code>first step - choose a domain.</code> click on the domain you have created. 
+Follow the instructions they have there and you should be ready with your brand new domain always pointing to your home IP.</p>
+<h2>Installing PiVPN</h2>
+<p>The next step is installing the PiVPN program which is the actual software that lets you connect any machine (PC, or mobile) to your home network. There's a simple script that takes care of the installation and you can run it with the following:</p>
+<div class="highlight"><pre><span></span><code>$ curl -L https://install.pivpn.io <span class="p">|</span> bash 
+</code></pre></div>
+
+<p>Choose the default settings and install it. When asked for using a static IP or a domain name, select the enter the domain name we created in DuckDNS. The only thing that I have changed in the installation is the port on which it communicates. </p>
+<p>Notice that you need to open this port to your router. This is accomplished by what is called <code>port forwarding</code> in most routers, but because it's specific to each router, I can't help with that. However this <a href="https://portforward.com/">website</a> has instructions for a multitute of routers.</p>
+<p>Now we need to create a new profile for a new user. To do that run the <code>pivpn add</code> command on the raspberry and enter a name for the client:</p>
+<div class="highlight"><pre><span></span><code><span class="nf">pi</span><span class="nv">@raspberrypi</span><span class="err">:</span><span class="o">~</span><span class="w"> </span><span class="err">$</span><span class="w"> </span><span class="n">pivpn</span><span class="w"> </span><span class="k">add</span><span class="w"></span>
+<span class="n">Enter</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">Name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="nl">Client</span><span class="p">:</span><span class="w"> </span><span class="n">test</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">Keys</span><span class="w"> </span><span class="n">generated</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">Client</span><span class="w"> </span><span class="n">config</span><span class="w"> </span><span class="n">generated</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">Updated</span><span class="w"> </span><span class="n">server</span><span class="w"> </span><span class="n">config</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">WireGuard</span><span class="w"> </span><span class="n">restarted</span><span class="w"></span>
+<span class="o">======================================================================</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">Done</span><span class="err">!</span><span class="w"> </span><span class="n">test</span><span class="p">.</span><span class="n">conf</span><span class="w"> </span><span class="n">successfully</span><span class="w"> </span><span class="n">created</span><span class="err">!</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">test</span><span class="p">.</span><span class="n">conf</span><span class="w"> </span><span class="n">was</span><span class="w"> </span><span class="n">copied</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="nf">pi</span><span class="o">/</span><span class="n">configs</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">easy</span><span class="w"> </span><span class="n">transfer</span><span class="p">.</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">Please</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">profile</span><span class="w"> </span><span class="k">only</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">one</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="ow">and</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="n">additional</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="n">profiles</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">other</span><span class="w"> </span><span class="n">devices</span><span class="p">.</span><span class="w"> </span><span class="n">You</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">use</span><span class="w"> </span><span class="n">pivpn</span><span class="w"> </span><span class="o">-</span><span class="n">qr</span><span class="w"></span>
+<span class="o">::</span><span class="err">:</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">generate</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">QR</span><span class="w"> </span><span class="n">Code</span><span class="w"> </span><span class="n">you</span><span class="w"> </span><span class="n">can</span><span class="w"> </span><span class="n">scan</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">mobile</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="w"></span>
+<span class="o">======================================================================</span><span class="w"></span>
+</code></pre></div>
+
+<p>And it's ready! To connect from your device follow the instruction to install the WireGuard client from their <a href="https://www.wireguard.com/install/">webpage</a>.
+If you install it on a mobile device use the <code>pivpn -qr</code> command to generate a QR code that you can scan from inside the mobile app to quickly setup the profile and connect.</p>
+<h2>Installing MotionEye</h2>
+<p>For this step you need to have attached the USB camera to the raspberry pi.</p>
+<p>The final piece of software that we'll install on the Pi is MotionEye. It's a frontend software for the popular <a href="https://motion-project.github.io/">motion</a> project that handles video signals from many types of cameras.</p>
+<p>To install it we will use the instructions on the <a href="https://github.com/ccrisan/motioneye/wiki/Install-On-Raspbian">github page</a>.</p>
+<div class="highlight"><pre><span></span><code><span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">ffmpeg</span><span class="w"> </span><span class="n">libmariadb3</span><span class="w"> </span><span class="n">libpq5</span><span class="w"> </span><span class="n">libmicrohttpd12</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">wget</span><span class="w"> </span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Motion</span><span class="o">-</span><span class="n">Project</span><span class="o">/</span><span class="n">motion</span><span class="o">/</span><span class="n">releases</span><span class="o">/</span><span class="n">download</span><span class="o">/</span><span class="n">release</span><span class="o">-</span><span class="mf">4.2</span><span class="o">.</span><span class="mi">2</span><span class="o">/</span><span class="n">pi_buster_motion_4</span><span class="o">.</span><span class="mf">2.2</span><span class="o">-</span><span class="mi">1</span><span class="n">_armhf</span><span class="o">.</span><span class="n">deb</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">dpkg</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">pi_buster_motion_4</span><span class="o">.</span><span class="mf">2.2</span><span class="o">-</span><span class="mi">1</span><span class="n">_armhf</span><span class="o">.</span><span class="n">deb</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">apt</span><span class="o">-</span><span class="n">get</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">pip</span><span class="w"> </span><span class="n">python</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">libssl</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">libcurl4</span><span class="o">-</span><span class="n">openssl</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">libjpeg</span><span class="o">-</span><span class="n">dev</span><span class="w"> </span><span class="n">libz</span><span class="o">-</span><span class="n">dev</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">pip</span><span class="w"> </span><span class="n">install</span><span class="w"> </span><span class="n">motioneye</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">motioneye</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">motioneye</span><span class="o">/</span><span class="n">extra</span><span class="o">/</span><span class="n">motioneye</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">sample</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">motioneye</span><span class="o">/</span><span class="n">motioneye</span><span class="o">.</span><span class="n">conf</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">mkdir</span><span class="w"> </span><span class="o">-</span><span class="n">p</span><span class="w"> </span><span class="o">/</span><span class="k">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">motioneye</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">cp</span><span class="w"> </span><span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">motioneye</span><span class="o">/</span><span class="n">extra</span><span class="o">/</span><span class="n">motioneye</span><span class="o">.</span><span class="n">systemd</span><span class="o">-</span><span class="n">unit</span><span class="o">-</span><span class="n">local</span><span class="w"> </span><span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">systemd</span><span class="o">/</span><span class="n">system</span><span class="o">/</span><span class="n">motioneye</span><span class="o">.</span><span class="n">service</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">systemctl</span><span class="w"> </span><span class="n">daemon</span><span class="o">-</span><span class="n">reload</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">systemctl</span><span class="w"> </span><span class="n">enable</span><span class="w"> </span><span class="n">motioneye</span><span class="w"></span>
+<span class="o">$</span><span class="w"> </span><span class="n">sudo</span><span class="w"> </span><span class="n">systemctl</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="n">motioneye</span><span class="w"></span>
+</code></pre></div>
+
+<p>Please make sure that you follow the instructions on the page not my copy here as they might change over time.</p>
+<p>Now if everything has been setup correctly going to the local address ( http://192.168.2.13:8765/ ) should open up the MotionEye page.
+The default credentials to login are <code>admin</code> for the username and an empty password.</p>
+<p>Next there should be a page with the a link the add a camera. Click on it and select the following:</p>
+<p><img alt="Setup" src="/images/camera-setup.png"></p>
+<p>This should create a set of options on the left side of the page as well as a window with a live feed from the camera.</p>
+<p>First go under General Settings and setup the Admin password and potionally a Surveillance username and password. The latter two are used for streaming the video only to a different post.</p>
+<p><img alt="General Settings" src="/images/camera-config.png"></p>
+<p>Then under video device change the resolution to <code>1280x720</code>.</p>
+<p><img alt="Resolution" src="/images/camera-resolution.png"></p>
+<p>And finally if you want to setup streaming to a different port, select the video streaming option and set the authentication mode to basic.</p>
+<p><img alt="Streaming" src="/images/camera-streaming.png"></p>
+<p>Then click apply and everything should be setup and ready to use.</p>
+<p>Now if you go to you local raspberry pi IP and port 8081 (in my case http://192.168.2.13:8081), after you login with the Surveillance username and password credentials you should see the streaming video from your camera.</p>
+<p>And if you have setup the WireGuard app on your mobile, and activated you profile you should be able to access this feed whenever you have internet access.</p>
+<h2>Final Thoughts and Future Work</h2>
+<p>I'm planning to make this automated setup a little smarter by adding some machine learning based control, so stay tuned for this.</p>
+  </div>
+  <div class="tag-cloud">
+    <p>
+      <a href="/tag/smarthome.html">SmartHome</a>
+      <a href="/tag/homeassistant.html">HomeAssistant</a>
+      <a href="/tag/conbee.html">Conbee</a>
+      <a href="/tag/motioneye.html">MotionEye</a>
+    </p>
+  </div>
+
+
+
+
+
+</article>
+
+    <footer>
+<p>&copy;  </p>
+<p>
+Built with <a href="http://getpelican.com" target="_blank">Pelican</a> using <a href="http://bit.ly/flex-pelican" target="_blank">Flex</a> theme
+</p>    </footer>
+  </main>
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context" : "http://schema.org",
+  "@type" : "Blog",
+  "name": " Kostis Tsaprailis ",
+  "url" : "",
+  "image": "/images/profile.png",
+  "description": ""
+}
+</script>
+
+</body>
+</html>
