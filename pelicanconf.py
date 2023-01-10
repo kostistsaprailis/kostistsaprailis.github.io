@@ -1,6 +1,6 @@
 AUTHOR = 'Kostis Tsaprailis'
 SITENAME = 'Kostis Tsaprailis'
-SITEURL = ''
+SITEURL = 'https://tsaprailis.com'
 
 PATH = 'content'
 
